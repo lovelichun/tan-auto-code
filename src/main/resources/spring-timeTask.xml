@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 工作的bean -->
+    <bean id="testJob" class="com.idp.web.task.TimeTaskDemo" />
+
+    <!-- 排程的配置开始 -->
+    <bean id="testJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	    <property name="targetObject">
+	      <ref bean="testJob" />
+	    </property>
+	    <property name="targetMethod">
+	    	<value>runTask</value>
+	    </property>
+    </bean>
+    <!-- 排程的配置结束 -->
+
+    <!-- 调度的配置开始 -->
+    <bean id="testJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    	<property name="jobDetail">
+      	<ref bean="testJobDetail" />
+      </property>
+     	<property name="cronExpression">
+      	<value>0 0 0 * * ?</value>
+      </property>
+    </bean>
+    <!-- 调度的配置结束 -->
+    
+
+    <!-- 启动触发器的配置开始 -->
+    <bean name="startQuertz" lazy-init="false" autowire="no"
+    	class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+   		<property name="triggers">
+      	<list>
+        	<ref bean="testJobTrigger" />
+        </list>
+      </property>
+    </bean>
+    <!-- 启动触发器的配置结束 -->
+
+</beans>

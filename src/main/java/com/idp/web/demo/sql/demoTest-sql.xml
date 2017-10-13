@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.idp.web.demo.dao.DemoTestDao">
+
+	<parameterMap id="parameterMap" type="com.idp.web.demo.entity.DemoTest"></parameterMap>
+	<resultMap id="resultMap" type="com.idp.web.demo.entity.DemoTest">
+		<result property="demoId" column="demo_id"/>
+		<result property="name" column="name"/>
+		<result property="age" column="age"/>
+		<result property="birthday" column="birthday"/>
+		<result property="deptId" column="dept_id"/>
+		<result property="sex" column="sex"/>
+		<result property="hobby" column="hobby"/>
+		<result property="remark" column="remark"/>
+	</resultMap>
+	
+	<sql id="columnSql">
+		<trim suffixOverrides=",">
+			t.demo_id,
+			t.name,
+			t.age,
+			t.birthday,
+			t.dept_id,
+			t.sex,
+			t.hobby,
+			t.remark,
+	 	</trim>
+	</sql>
+	
+	<select id="find" parameterMap="parameterMap" resultMap="resultMap">
+		select
+			<include refid="columnSql"></include>
+		from demo_test t
+		<where>
+			<if test="name != null and name != ''">
+				and t.name like concat('%',#{name},'%')
+			</if>
+			<if test="ageStart != null and ageStart != ''">
+				and t.age >= #{ageStart}
+			</if>
+			<if test="ageEnd != null and ageEnd != ''">
+				and t.age <![CDATA[<]]> #{ageEnd} 
+			</if>
+			<if test="birthdayStart != null and birthdayStart != ''">
+				and t.birthday >= #{birthdayStart}
+			</if>
+			<if test="birthdayEnd != null and birthdayEnd != ''">
+				and t.birthday <![CDATA[<]]> #{birthdayEnd} 
+			</if>
+			<if test="deptId != null and deptId != ''">
+				and t.dept_id = #{deptId}			
+			</if>
+		</where>
+	</select>
+	
+	<select id="getById" parameterType="java.lang.String" resultMap="resultMap">
+		select
+			<include refid="columnSql"></include>
+		from demo_test t
+		where t.demo_id = #{value}
+	</select>
+	
+	<insert id="add" parameterMap="parameterMap">
+		insert into demo_test
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			demo_id,
+			name,
+			age,
+			birthday,
+			dept_id,
+			sex,
+			hobby,
+			remark,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{demoId},
+			#{name},
+			#{age},
+			#{birthday},
+			#{deptId},
+			#{sex},
+			#{hobby},
+			#{remark},
+		</trim>
+	</insert>
+	
+	<insert id="batchAdd" parameterType="java.util.List">
+		insert into demo_test
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			demo_id,
+			name,
+			age,
+			birthday,
+			dept_id,
+			sex,
+			hobby,
+			remark,
+		</trim>
+		values
+		<foreach collection="list" item="item" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				#{item.demoId},
+				#{item.name},
+				#{item.age},
+				#{item.birthday},
+				#{item.deptId},
+				#{item.sex},
+				#{item.hobby},
+				#{item.remark},
+			</trim>
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterMap="parameterMap">
+		update demo_test
+		<set>
+			name = #{name},
+			age = #{age},
+			birthday = #{birthday},
+			dept_id = #{deptId},
+			sex = #{sex},
+			hobby = #{hobby},
+			remark = #{remark},
+		</set>
+		where demo_id = #{demoId}
+	</update>
+	
+	<update id="updateNotNull" parameterMap="parameterMap">
+		update demo_test
+		<set>
+			<if test="name != null">
+			name = #{name},
+			</if>
+			<if test="age != null">
+			age = #{age},
+			</if>
+			<if test="birthday != null">
+			birthday = #{birthday},
+			</if>
+			<if test="deptId != null">
+			dept_id = #{deptId},
+			</if>
+			<if test="sex != null">
+			sex = #{sex},
+			</if>
+			<if test="hobby != null">
+			hobby = #{hobby},
+			</if>
+			<if test="remark != null">
+			remark = #{remark},
+			</if>
+		</set>
+		where demo_id = #{demoId}
+	</update>
+	
+	<delete id="delete" parameterType="java.lang.String">
+		delete from demo_test where demo_id = #{value}
+	</delete>
+	
+	<delete id="batchDelete" parameterType="java.util.List">
+		delete from demo_test where demo_id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	
+</mapper>
